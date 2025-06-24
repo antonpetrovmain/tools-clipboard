@@ -14,7 +14,7 @@ def display_entries(history):
         for i, entry in enumerate(history):
             reversed_index = len(history) - 1 - i
             color = COLORS[reversed_index % len(COLORS)]
-            preview = (entry[:20] + "...") if len(entry) > 20 else entry
+            preview = (entry.replace('\n', ' ')[:20] + "...") if len(entry) > 20 else entry.replace('\n', ' ')
             print(f"{color}{reversed_index}: {preview}{Style.RESET_ALL}")
 
 def monitor_clipboard(history, redraw_event):
@@ -25,7 +25,7 @@ def monitor_clipboard(history, redraw_event):
             history.append(current_clipboard)
             redraw_event.set()
             previous_clipboard = current_clipboard
-        time.sleep(1)
+        time.sleep(0.2)
 
 def main():
     colorama.init()
