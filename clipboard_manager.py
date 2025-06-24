@@ -12,9 +12,10 @@ def display_entries(history):
         print("No entries in clipboard history.")
     else:
         for i, entry in enumerate(history):
-            color = COLORS[i % len(COLORS)]
+            reversed_index = len(history) - 1 - i
+            color = COLORS[reversed_index % len(COLORS)]
             preview = (entry[:20] + "...") if len(entry) > 20 else entry
-            print(f"{color}{i}: {preview}{Style.RESET_ALL}")
+            print(f"{color}{reversed_index}: {preview}{Style.RESET_ALL}")
 
 def monitor_clipboard(history, redraw_event):
     previous_clipboard = ""
@@ -43,7 +44,8 @@ def main():
         if choice.isdigit():
             idx = int(choice)
             if 0 <= idx < len(history):
-                pyperclip.copy(history[idx])
+                original_index = len(history) - 1 - idx
+                pyperclip.copy(history[original_index])
                 print(f"Entry {idx} copied to clipboard.")
             else:
                 print("Invalid entry number.")
