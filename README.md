@@ -5,7 +5,7 @@ A terminal-based clipboard history manager that tracks clipboard entries in real
 ## 🧠 Features
 
 - ✅ **Real-time clipboard monitoring**
-  Detects and stores new clipboard content every 0.2 seconds.
+  Detects and stores new clipboard content every 0.1 seconds.
 
 - 🚫 **Duplicate removal**
   Automatically removes older entries with the same content as newer ones.
@@ -37,7 +37,6 @@ python clipboard_manager.py
    - A list of clipboard entries appears in reverse chronological order (newest at the bottom).
    - Each entry is color-coded for easy identification.
    - Enter a number to copy an entry back to your clipboard.
-   - Press **Enter** to refresh the display without copying anything.
 
 3. Exit by pressing `Ctrl+C`.
 
@@ -53,12 +52,10 @@ python clipboard_manager.py
 
 ## 🧩 Dependencies
 
-```txt
-colorama==0.4.6
-pyperclip==1.8.2
-```
-
 (Defined in `requirements.txt`.)
+
+## ⚠️ Disclaimer
+This project was developed using Qwen3 and Qwen2.5 Coder models.
 
 ## 🧪 Testing
 
