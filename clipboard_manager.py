@@ -28,7 +28,7 @@ def monitor_clipboard(history, redraw_event):
             history.append(current_clipboard)
             redraw_event.set()
             previous_clipboard = current_clipboard
-        time.sleep(0.2)
+        time.sleep(0.1)
 
 def main():
     colorama.init()
