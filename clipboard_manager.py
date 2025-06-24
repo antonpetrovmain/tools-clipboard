@@ -52,9 +52,13 @@ def main():
             else:
                 print("Invalid entry number.")
         elif choice == "":
-            continue
+            pass  # Allow execution to continue and redraw the screen
         else:
             print("Invalid input. Please enter a number.")
+
+        # Force redraw after each action
+        print("\033[2J\033[H", end='')  # Clear screen
+        display_entries(history)
 
 if __name__ == "__main__":
     main()
