@@ -37,28 +37,44 @@ def main():
     clipboard_thread = threading.Thread(target=monitor_clipboard, args=(history, redraw_event), daemon=True)
     clipboard_thread.start()
 
+import sys
+import select
+
+def main():
+    colorama.init()
+    history = []
+    redraw_event = threading.Event()
+
+    clipboard_thread = threading.Thread(target=monitor_clipboard, args=(history, redraw_event), daemon=True)
+    clipboard_thread.start()
+
     while True:
+        # Check for input with timeout (0.1s) to allow frequent redraw checks
+        if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
+            choice = input("\nEnter the number of the entry to copy (or press Enter to continue): ").strip()
+            if choice.isdigit():
+                idx = int(choice)
+                if 0 <= idx < len(history):
+                    original_index = len(history) - 1 - idx
+                    pyperclip.copy(history[original_index])
+                    print(f"Entry {idx} copied to clipboard.")
+                else:
+                    print("Invalid entry number.")
+            elif choice == "":
+                pass  # Allow execution to continue and redraw the screen
+            else:
+                print("Invalid input. Please enter a number.")
+
+        # Always check for redraw event
         if redraw_event.is_set():
             display_entries(history)
             redraw_event.clear()
 
-        choice = input("\nEnter the number of the entry to copy (or press Enter to continue): ").strip()
-        if choice.isdigit():
-            idx = int(choice)
-            if 0 <= idx < len(history):
-                original_index = len(history) - 1 - idx
-                pyperclip.copy(history[original_index])
-                print(f"Entry {idx} copied to clipboard.")
-            else:
-                print("Invalid entry number.")
-        elif choice == "":
-            pass  # Allow execution to continue and redraw the screen
-        else:
-            print("Invalid input. Please enter a number.")
+        # Optional: Add a small sleep to reduce CPU usage
+        time.sleep(0.1)
 
-        # Force redraw after each action
-        print("\033[2J\033[H", end='')  # Clear screen
-        display_entries(history)
+if __name__ == "__main__":
+    main()
 
 if __name__ == "__main__":
     main()
