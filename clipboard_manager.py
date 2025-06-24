@@ -51,7 +51,7 @@ def main():
     while True:
         # Check for input with timeout (0.1s) to allow frequent redraw checks
         if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
-            choice = input("\nEnter the number of the entry to copy (or press Enter to continue): ").strip()
+            choice = input().strip()
             if choice.isdigit():
                 idx = int(choice)
                 if 0 <= idx < len(history):
