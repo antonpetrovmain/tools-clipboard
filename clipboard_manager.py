@@ -22,6 +22,8 @@ def monitor_clipboard(history, redraw_event):
     while True:
         current_clipboard = pyperclip.paste()
         if current_clipboard != previous_clipboard:
+            # Remove older entries with the same content before adding the new one
+            history[:] = [entry for entry in history if entry != current_clipboard]
             history.append(current_clipboard)
             redraw_event.set()
             previous_clipboard = current_clipboard
