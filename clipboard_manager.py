@@ -14,8 +14,9 @@ def display_entries(history):
         for i, entry in enumerate(history):
             reversed_index = len(history) - 1 - i
             color = COLORS[reversed_index % len(COLORS)]
-            preview = (entry.replace('\n', ' ')[:20] + "...") if len(entry) > 20 else entry.replace('\n', ' ')
-            print(f"{color}{reversed_index}: {preview}{Style.RESET_ALL}")
+            preview = entry
+            line = f"{color}{reversed_index}: {preview}{Style.RESET_ALL}"
+            print(line, end='')
 
 def monitor_clipboard(history, redraw_event):
     previous_clipboard = ""
