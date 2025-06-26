@@ -47,6 +47,7 @@ def main():
             choice = input().strip()
             if not choice:
                 current_filter = ""
+                redraw_event.set()  # Trigger immediate screen refresh after filter update
             elif choice.isdigit():
                 idx = int(choice)
                 displayed_indexes = []
