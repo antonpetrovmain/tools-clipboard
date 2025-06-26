@@ -2,21 +2,24 @@ import pyperclip
 import threading
 import time
 import colorama
+import sys
+import select
 from colorama import Fore, Style
 
 COLORS = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA]
 
-def display_entries(history):
-    print("\033[2J\033[H", end='')  # Clear screen and move to top-left
-    if not history:
-        print("No entries in clipboard history.")
-    else:
-        for i, entry in enumerate(history):
-            reversed_index = len(history) - 1 - i
-            color = COLORS[reversed_index % len(COLORS)]
-            preview = entry
-            line = f"{color}{reversed_index}: {preview}{Style.RESET_ALL}"
-            print(line, end='')
+def display_entries(history, filter_str=""):
+    print('\033[2J\033[H', end='')  # Clear screen and reset cursor
+    filtered = []
+    for idx, entry in enumerate(history):
+        if not filter_str or filter_str.lower() in entry.lower():
+            filtered.append((idx, entry))
+    for i, (original_idx, entry) in enumerate(filtered):
+        color = COLORS[i % len(COLORS)]
+        displayed_index = len(history) - 1 - original_idx
+        line = f"{color}{displayed_index}: {entry}{Style.RESET_ALL}"
+        print(line, end='\n')
+    return filtered
 
 def monitor_clipboard(history, redraw_event):
     previous_clipboard = ""
@@ -34,48 +37,40 @@ def main():
     colorama.init()
     history = []
     redraw_event = threading.Event()
-
-    clipboard_thread = threading.Thread(target=monitor_clipboard, args=(history, redraw_event), daemon=True)
-    clipboard_thread.start()
-
-import sys
-import select
-
-def main():
-    colorama.init()
-    history = []
-    redraw_event = threading.Event()
+    current_filter = ""
 
     clipboard_thread = threading.Thread(target=monitor_clipboard, args=(history, redraw_event), daemon=True)
     clipboard_thread.start()
 
     while True:
-        # Check for input with timeout (0.1s) to allow frequent redraw checks
         if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
             choice = input().strip()
-            if choice.isdigit():
+            if not choice:
+                current_filter = ""
+            elif choice.isdigit():
                 idx = int(choice)
-                if 0 <= idx < len(history):
-                    original_index = len(history) - 1 - idx
-                    pyperclip.copy(history[original_index])
+                displayed_indexes = []
+                for original_idx, entry in enumerate(history):
+                    if not current_filter or current_filter.lower() in entry.lower():
+                        displayed_index = len(history) - 1 - original_idx
+                        displayed_indexes.append(displayed_index)
+                if idx in displayed_indexes:
+                    original_idx = len(history) - 1 - idx
+                    pyperclip.copy(history[original_idx])
                     print(f"Entry {idx} copied to clipboard.")
                 else:
-                    print("Invalid entry number.")
-            elif choice == "":
-                pass  # Allow execution to continue and redraw the screen
+                    print("Invalid index.")
+                current_filter = ""
+                redraw_event.set()
             else:
-                print("Invalid input. Please enter a number.")
+                current_filter = choice
+                redraw_event.set()  # Trigger immediate screen refresh after filter update
 
-        # Always check for redraw event
         if redraw_event.is_set():
-            display_entries(history)
+            display_entries(history, current_filter)
             redraw_event.clear()
 
-        # Optional: Add a small sleep to reduce CPU usage
         time.sleep(0.1)
-
-if __name__ == "__main__":
-    main()
 
 if __name__ == "__main__":
     main()

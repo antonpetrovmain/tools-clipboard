@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "foo" | xsel -b
+echo -n "foo" | xsel -b
 sleep 1
-echo "bar" | xsel -b
+echo -n "bar" | xsel -b
 sleep 1
-echo "zab" | xsel -b
+echo -n "zab" | xsel -b
 
